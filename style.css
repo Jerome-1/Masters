@@ -1,0 +1,82 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    overflow: hidden;
+    height: 90px;
+    background-color: rgb(170, 103, 3);
+    
+}
+
+p {
+    color: white;
+    margin: 30;
+}
+body {
+    background: rgb(6, 17, 26);
+}
+
+#logo{
+    float: left;
+    padding: none;
+    margin: none;
+    height: 150px;
+    width: 337px;
+    display: inline;
+    
+}
+
+#logo img{
+    width: 60%;
+    float: left;
+    padding: 10px 0px;
+}
+
+#menu{
+    display: inline-block;
+    width: 70%;
+    height: 100%;
+    margin: -14px;
+}
+#menu2{
+    float: right;
+    width: 70%;
+    height: 100%;
+    margin: -14px;
+}
+#menu li{
+    display: inline-block;
+    padding: none;
+    margin: none;
+
+}
+#menu2 li{
+    display: inline-block;
+    padding: none;
+    margin: none;
+
+}
+#menu li a, #menu li span{
+    
+    padding: 0em 1.5em;
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 60px;
+}
+#menu2 li a, #menu2 li span{
+    
+    padding: 0em 1.5em;
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 60px;
+}
+
+nav {
+    width: 80%;
+    position: sticky;
+    margin: 17px auto;
+    z-index: 1;
+    display:flex;
+    
+}

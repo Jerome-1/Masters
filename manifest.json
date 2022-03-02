@@ -1,0 +1,19 @@
+{
+    "name": "First PWA Example",
+    "short_name": "PWA Example",
+    "theme_color": "#000000",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "",
+    "description": "This is a test to see if it loads to the manifest",
+    "icons": [
+        {
+            "src": "images/logo1.png",
+            "sizes": "512x512",
+            "type" : "image/png",
+            "purpose" : "any maskable"
+
+        }
+    ]
+}
