@@ -1,0 +1,25 @@
+{
+  "name": "masters",
+  "server-debug": "nodemon --inspect server.js",
+  "version": "1.0.0",
+  "description": "Progressive Web App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jerome-1/Masters.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jerome-1/Masters/issues"
+  },
+  "homepage": "https://github.com/Jerome-1/Masters#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "nodemon": "^2.0.15"
+  }
+}

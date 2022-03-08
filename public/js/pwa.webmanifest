@@ -1,0 +1,17 @@
+{
+    "name": "Progressive Web App with express",
+    "short_name": "pwa-tutorial",
+    "description": "Attempting to create a PWA that is connected to a node.js server.",
+    "icons": [
+      {
+        "src": "/../images/logo1.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "theme_color": "#ffffff",
+    "background_color": "#764ABC"
+  }
