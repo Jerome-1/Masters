@@ -1,11 +1,11 @@
-const CACHE_NAME = 'sw-cache-example';
+const CACHE_NAME = 'sw-cache-example'; //creating cache name
 const toCache = [
   '/',
   '/index.html',
   '/js/status.js',
-];
+]; //Adding necessary files to local cache
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function(event) { //installing service worker
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
@@ -15,7 +15,7 @@ self.addEventListener('install', function(event) {
   )
 })
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function(event) { //Fetching the files stored in local cache.
   event.respondWith(
     fetch(event.request)
       .catch(() => {
@@ -27,7 +27,7 @@ self.addEventListener('fetch', function(event) {
   )
 })
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function(event) { //Updating service worker when files have been edited.
   event.waitUntil(
     caches.keys()
       .then((keyList) => {

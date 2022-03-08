@@ -1,3 +1,4 @@
+//Checking if service worker has been registered.
 document.addEventListener('DOMContentLoaded', init, false);
 function init() {
   if ('serviceWorker' in navigator) {
