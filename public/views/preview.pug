@@ -1,19 +1,31 @@
 extends layout 
 block content 
-    .preview-page 
-        .preview-template 
-            h1 Title: #{book.title}
-            p  This is a preview of the first chapter from the book '#{book.title}'. If you wish to reserve this book for checkout in the future, hit on the reserve button below. The ID for this book is - #{book.book_id}. 
-            p Chapter one of '#{book.title}'
-            .preview-chapter 
-                p #{book.chapter}
-
-            .review 
-                h2 Create A review about #{book.title}
-                    form(action="/rev", method='POST')
-                        input(type="hidden" name='id' value=book.book_id)
-                        textarea(name="review", cols="50", rows="6")  
-                        div 
-                        input(type="submit" value='Review')
-            .reserve 
-                a.btn(href="/reserved/" + book.book_id) Reserve Book
+    .block
+        h1.header Book Preview
+        .block-content-img
+            img(src="../images/roman2.jpg", alt="cover photo", style="width: 500px") 
+        .block-content-text
+            h2.jho #{book.title} 
+            p.heck By #{book.author} 
+            p.blam Genres:
+                a(href="/" + book.genre) #{book.genre}  
+            a.ha(href="/reserved/" + book.book_id) Reserve Book 
+    .block2 
+        h2.chapter-header Chapter One
+        .chapter-content
+            p #{book.chapter} 
+    .block3
+        h3 Rate this book
+        .rating
+            <i class="rating__star fa-solid fa-star"></i>
+            <i class="rating__star fa-solid fa-star"></i>
+            <i class="rating__star fa-solid fa-star"></i>
+            <i class="rating__star fa-solid fa-star"></i>
+            <i class="rating__star fa-solid fa-star"></i>
+    .block4 
+        .review 
+            h2 Write a review about #{book.title}
+                form(action="/rev", method='POST')
+                    input(type="hidden" name='id' value=book.book_id)
+                    textarea(name="review", cols="250", rows="6")   
+                    input(type="submit" value='Review')

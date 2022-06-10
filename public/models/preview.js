@@ -4,6 +4,8 @@ const db = require('../js/db');
 
 class Preview {
     title;
+    author;
+    genre;
     chapter;
     book_id;
     review;
@@ -16,6 +18,20 @@ class Preview {
             const result = await db.query(sql, [this.book_id]);
             this.title = result[0].title;
             this.review = result[0].review;
+        }
+    }
+    async getPreviewGenre() {
+        if (typeof this.genre !== 'Preview') {
+            var sql = "select `genre` from preview where `book_id`=?";
+            const result = await db.query(sql, [this.book_id]);
+            this.genre = result[0].genre;
+        }
+    }
+    async getPreviewAuthor() {
+        if (typeof this.author !== 'Preview') {
+            var sql = "select `author` from preview where `book_id`=?";
+            const result = await db.query(sql, [this.book_id]);
+            this.author = result[0].author;
         }
     }
     async getPreviewChapter() {

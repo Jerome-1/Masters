@@ -26,6 +26,7 @@ class Book {
         const result = await db.query(sql, [this.book_id]);
         this.genre = result[0].genre;
     }
+    
 }
 module.exports = {
     Book

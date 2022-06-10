@@ -1,7 +1,22 @@
 extends layout 
 block content 
-    h1 #{reserved.book_name}
-    h2 #{reserved.book_author}
-    h3 #{reserved.genre}
-    h4 #{reserved.book_id}
+    //h1 #{reserved.book_name}
+    //h2 #{reserved.book_author}
+    //h3 #{reserved.genre}
+    //h4 #{reserved.book_id}
+    .form
+        h1 Form Version?
+
+        form(action="/reservations" method='POST')
+            label(for="book_name") 
+            input.username('type'="text", name="name", value=reserved.book_name)
+            label(for="book_author") 
+            input.username('type'="text", name="author", value=reserved.book_author)  
+            label(for="genre") 
+            input.username('type'="text", name="genre", value=reserved.genre)
+            label(for="book_id") 
+            input.username('type'="text", name="id", value=reserved.book_id)
+            label(for="member_id") 
+            input.username('type'="text", name="member", value=session)  
+            input.username(type='submit' value='Submit')
     //a.btn(href="/") 

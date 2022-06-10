@@ -1,13 +1,9 @@
 //TO START SERVER ENTER IN THE COMMAND LINE "NPM START"
 const express = require('express'); //Assigning expreess library to variable.
-
 const path = require('path'); //Assinging path to variable
-
 const mysql =require('mysql2'); //Assigning mysql2 library to variable.
-
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
-
 const db = require('./public/js/db'); //Linking database utility functions and query to the server(app.js)
 const res = require('express/lib/response'); //He popped up randomly LMAO
 const httpPort = 3000; //setting up the port numbers
@@ -35,9 +31,8 @@ app.set('views', './public/views');
 const { Preview } = require("./public/models/preview");
 const { Book } = require("./public/models/book");
 const { Members } = require("./public/models/members");
+const { Reservations } = require("./public/models/reservations");
 const { execPath } = require('process');
-
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 //Setting up book reservations page
@@ -50,7 +45,164 @@ app.get("/", function(req, res) {
     }
     res.end();
 });
-//Account information -NOT IMPORTANT-
+
+// Books Database
+app.get("/library", function(req, res) {
+    var test = 'select `book_name`, `book_author`, `book_id`, `genre` from books';
+    db.query(test).then(results => {
+        if (req.session._id) {
+            res.render("library", {experiment:results});
+        }
+        else {
+            res.render("landing");
+        }
+        res.end();
+    });   
+});
+
+//Using OOP Models to get database information
+app.get("/solo-book/:book_id", async function (req, res) {
+    var bookId = req.params.book_id;
+    var book = new Preview(bookId);
+    book.getPreviewDetails().then(
+        Promise => {
+            book.getPreviewChapter().then(
+                Promise => {
+                    book.getPreviewAuthor().then(
+                        Promise => {
+                            book.getPreviewGenre().then(
+                                Promise => {
+                                    if (req.session._id) {
+                                        console.log(book)
+                                        res.render("preview", {book:book});
+                                    }
+                                    else {
+                                        res.render("landing");
+                                    }
+                                    res.end();
+                                }
+                            )
+                        }
+                    )
+                }
+            )
+        }
+    )
+});
+// Book Reservations Form 
+app.get("/reserved/:book_id", async function(req, res) {
+    var reserved = req.params.book_id;
+    var book = new Book(reserved);
+    book.getBookDetails().then(
+        Promise => {
+            book.getBookAuthor().then(
+                Promise => {
+                    book.getBookGenre().then(
+                        Promise => {
+                            if (req.session._id) {
+                                console.log(book)
+                                const userID = req.session._id
+                                res.render("reserved", {reserved:book, session:userID})
+                            }
+                            else {
+                                res.render("landing");
+                            }
+                            res.end();
+                        }
+                    );
+                }
+            );
+
+        }) 
+});
+
+//Reservated book inserted into the database.
+app.post('/reservations', urlencodedParser, async function (req, res) {
+    const {name, author, genre, id, member} = req.body;
+    var reservations = new Reservations;
+    console.log('Title: ', name, '|Author: ', author, '|Genre: ', genre, '|Book Id: ', id, '|Member Id: ', member);
+    try {
+        reservations.getReservedId(id).then(insert => {
+            if (insert) {
+                console.log('Book has been Reserved');
+                res.redirect('/')
+            }
+            else {
+                console.log('this book hasnt been reserved');
+                reservations.addReservation(id, member,name, author, genre ).then(Promise => {
+                    console.log(reservations)
+                    res.redirect('/')
+                });
+            }
+        });
+    }
+    catch (err) {
+        console.log('Information cant insert because ', err.message)
+    }
+});
+//Registration
+app.get('/register', async function (req, res) {
+    res.render("register");
+});
+
+app.post('/registration', urlencodedParser, async function (req, res) {
+    const {email, username, password} = req.body;
+    console.log('email is :', email, 'password is:', password);
+    var member = new Members;
+    try {
+        member.getEmailId(email).then(mId => {
+            if (mId) {
+                console.log('user exists');
+                res.send('A user with this email already exists');
+            }
+            else {
+                console.log('user doesnt exist')
+                member.addMember(email, username, password).then(Promise => {
+                    console.log(member);
+                    res.redirect('/login');
+                });
+            }
+        })
+    } catch (err) {
+        console.error(`error while adding password`, err.message);
+        res.send('error with password')
+    }
+});
+
+
+//Login 
+app.get('/login', function (req, res) {
+    res.render("landing");
+})
+
+app.post('/login', urlencodedParser, function (req, res) {
+    const {username, password} = req.body;
+    console.log('username is:', username, 'password is:', password);
+    var member = new Members;
+    try {
+        member.authenticate(username, password).then(result => {
+            if (result.match) {
+                req.session._id = result._id;
+                req.session.loggedIn = true;
+                console.log(req.session);
+                res.redirect('/');
+            }
+            else {
+                res.send('invalid password');
+            }
+        });
+    } catch (err) {
+        console.error(`error while comparing`, err.message);
+    }
+});
+
+app.get('/logout', function (req, res) {
+    req.session.destroy();
+    res.redirect('/login');
+});
+
+
+//Account information -NOT IMPORTANT- YET
 app.get("/account", function(req, res) {
         if (req.session._id) {
             res.render("account");
@@ -60,22 +212,9 @@ app.get("/account", function(req, res) {
         }
         res.end();   
 });
-//Setting up Library 
-app.get("/gone", function(req, res) {
-    var description = 'select `book_name`, `book_author`, `book_id`, `genre` from books'; // SQL query collecting information from `book` database.
-    db.query(description).then(results => {
-        if (req.session._id) {
-            res.render("library", {data:results});
-        }
-        else {
-            res.render("landing");
-        }
-        res.end();//Stores sql query into the data variable which is then outputted in the pug template 'library.pug'
-    });
-});
-
+//Genres
 app.get("/adventure", function(req, res) {
-    var genre1 = 'select `book_name`, `book_author`, `book_id`, `genre` from books where `genre` = "Action"';
+    var genre1 = 'select `book_name`, `book_author`, `book_id`, `genre` from books where `genre` = "Adventure"';
     db.query(genre1).then(results => {
         if (req.session._id) {
             res.render("action", {data:results});
@@ -134,7 +273,6 @@ app.get("/thriller", function(req, res) {
         res.end();        
     });
 });
-
 app.get("/children", function(req, res) {
     var genre1 = 'select `book_name`, `book_author`, `book_id`, `genre` from books where `genre` = "Children"';
     db.query(genre1).then(results => {
@@ -150,58 +288,6 @@ app.get("/children", function(req, res) {
 
 // !!!!! WORK IN PROGRESS !!!!! 
 
-//Using OOP Models to get database information
-app.get("/solo-book/:book_id", async function (req, res) {
-    var bookId = req.params.book_id;
-    var book = new Preview(bookId);
-    book.getPreviewDetails().then(
-        Promise => {
-            book.getPreviewChapter().then(
-                Promise => {
-                    if (req.session._id) {
-                        console.log(book)
-                        res.render("preview", {book:book});
-                    }
-                    else {
-                        res.render("landing");
-                    }
-                    res.end();
-                }
-            )
-        }
-    )
-});
-//Reservations
-app.get("/reserved/:book_id", async function(req, res) {
-    var reserved = req.params.book_id;
-    var book = new Book(reserved);
-    await book.getBookDetails();
-    await book.getBookAuthor();
-    await book.getBookGenre();
-    if (req.session._id) {
-        console.log(book)
-        res.render("reserved", {reserved:book})
-    }
-    else {
-        res.render("landing");
-    }
-    res.end(); //gotta figure out how to save this content to the webpage.
-});
-
-//Testing different ways to display books
-app.get("/library", function(req, res) {
-    var test = 'select `book_name`, `book_author`, `book_id`, `genre` from books';
-    db.query(test).then(results => {
-        if (req.session._id) {
-            res.render("test", {experiment:results});
-        }
-        else {
-            res.render("landing");
-        }
-        res.end();
-    });   
-});
-
 //Adding a review to a book preview
 app.post('/rev', function (req, res) {
     params = req.body;
@@ -216,72 +302,23 @@ app.post('/rev', function (req, res) {
     }
 });
 
-app.get('/register', async function (req, res) {
-    res.render("register");
+
+//Setting up Library 
+app.get("/test", function(req, res) {
+    var description = 'select `book_name`, `book_author`, `book_id`, `genre` from books'; // SQL query collecting information from `book` database.
+    db.query(description).then(results => {
+        if (req.session._id) {
+            res.render("redunLib", {data:results});
+        }
+        else {
+            res.render("landing");
+        }
+        res.end();//Stores sql query into the data variable which is then outputted in the pug template 'library.pug'
+    });
 });
 
-app.post('/registration', urlencodedParser, function (req, res) {
-    const {email, username, password} = req.body;
-    console.log('email is :', email, 'password is:', password);
-    var member = new Members;
-    try {
-        member.getEmailId(email).then(mId => {
-            if (mId) {
-                console.log('user exists');
-                res.send('A user with this email already exists');
-            }
-            else {
-                console.log('user doesnt exist')
-                member.addMember(email, username, password).then(Promise => {
-                    console.log(member);
-                    res.redirect('/login');
-                });
-            }
-        })
-    } catch (err) {
-        console.error(`error while adding password`, err.message);
-        res.send('error with password')
-    }
-})
 
-app.get('/login', function (req, res) {
-    res.render("landing");
-})
 
-app.post('/login', urlencodedParser, function (req, res) {
-    const {username, password} = req.body;
-    console.log('username is:', username, 'password is:', password);
-    var member = new Members;
-    try {
-        member.authenticate(username, password).then(result => {
-            if (result.match) {
-                req.session._id = result._id;
-                req.session.loggedIn = true;
-                console.log(req.session);
-                res.redirect('/');
-            }
-            else {
-                res.send('invalid password');
-            }
-        });
-    } catch (err) {
-        console.error(`error while comparing`, err.message);
-    }
-});
-
-app.get('/logout', function (req, res) {
-    req.session.destroy();
-    res.redirect('/login');
-})
-
-app.get('/pictures', function (req, res) {
-    var hello = 'select imageBits from images';
-    db.query(hello).then(results => {
-        console.log(results)
-        res.render("pictures", {data:results})
-    })
-
-})
 
 app.listen(httpPort, function () {
     console.log(`Running at http:// ${hostname}:${httpPort}!`);
