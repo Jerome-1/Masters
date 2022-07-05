@@ -32,3 +32,8 @@ Application Features That Support This Project:
 - Application is served through a web-browser and is not platform or device specific. 
 - For easier use, application can be installed to the device its being viewed on. 
 
+Running this Project: 
+Node.js, Express, mysql2 and supervisor are being used to run this project.
+Use NPM install to download all the dependicies. 
+Npm start is used to start the server the application is being used on. 
+
