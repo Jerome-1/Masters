@@ -91,7 +91,7 @@ app.get("/solo-book/:book_id", async function (req, res) {
 });
 // Book Reservations Form 
 app.get("/reserved/:book_id", async function(req, res) {
-    var reserved = req.params.book_id;
+    const reserved = req.params.book_id;
     var book = new Book(reserved);
     book.getBookDetails().then(
         Promise => {
@@ -117,7 +117,7 @@ app.get("/reserved/:book_id", async function(req, res) {
 });
 
 //Reservated book inserted into the database.
-app.post('/reservations', urlencodedParser, async function (req, res) {
+app.post('/check-Out', urlencodedParser, async function (req, res) {
     const {name, author, genre, id, member} = req.body;
     var reservations = new Reservations;
     console.log('Title: ', name, '|Author: ', author, '|Genre: ', genre, '|Book Id: ', id, '|Member Id: ', member);
@@ -140,6 +140,10 @@ app.post('/reservations', urlencodedParser, async function (req, res) {
         console.log('Information cant insert because ', err.message)
     }
 });
+
+//Books reserved by the user
+app.get('/reservations', async function(req, res) {
+})
 //Registration
 app.get('/register', async function (req, res) {
     res.render("register");
@@ -203,14 +207,44 @@ app.get('/logout', function (req, res) {
 
 
 //Account information -NOT IMPORTANT- YET
-app.get("/account", function(req, res) {
-        if (req.session._id) {
-            res.render("account");
-        }
-        else {
-            res.render("landing");
-        }
-        res.end();   
+app.get("/account", async function(req, res) {
+    const userID = req.session._id;
+    console.log(`User id is:  `, userID);
+    res.render("account", {session:userID});
+    const reserved = req.params.book_id;
+    var book = new Book(reserved);
+    var reservations = new Reservations;
+    try {
+        console.log(userID)
+        reservations.getMemberId(userID).then(account => {
+            if (account) {
+                reservations.getTitle().then(
+                    Promise => {
+                        reservations.getAuthor().then(
+                            Promise => {
+                                reservations.getGenre().then(
+                                    Promise => {
+                                        res.render("account", {session:userID, reserved:reservations});
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            } /*Alright im gonna keep it a buck with you future Jerome. We have the logic all wrong. So lets explain whats happening. One we can successfully drag the logged in user id out and
+display it on the page and the console. Congrats. But now we need to use that id to grab the book id of the reserved item. Once that is done, we will then print out the book ids contents. Its 
+all linked, you just gotta figure it out. Looking at the table, we can see how its seperated with the member and book id properties. We was on the right track with using the book models. We just didn't have the
+id. Example can be seen abovee. Instead of using the reservation model we can try use the book model. Good luck my duude.
+            
+            */
+            else {
+                console.log("ooga booga")
+            }
+        })
+    }
+    catch (err) {
+        console.log('Information cant insert because ', err.message)
+    }
 });
 //Genres
 app.get("/adventure", function(req, res) {

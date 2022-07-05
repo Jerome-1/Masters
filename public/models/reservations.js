@@ -30,24 +30,6 @@ class Reservations {
                 return false;
             }
     }
-
-    async getTitle(book_name) {
-        var sql = "SELECT book_name from reservations WHERE reservations.book_id = ?";
-        const result = await db.query(sql, [this.book_id]);
-        this.book_name = result[0].book_name;
-    }
-    async getAuthor(book_author) {
-        var sql = "SELECT book_author from reservations WHERE reservations.book_id = ?";
-        const result = await db.query(sql, [this.book_id]);
-        this.book_author = result[0].book_author;
-    }
-    async getGenre(genre) {
-        var sql = "SELECT genre from reservations WHERE reservations.book_id = ?";
-        const result = await db.query(sql, [this.book_id]);
-        this.book_genre = result[0].book_genre;
-    }
-    
-    
     async addReservation(book_id, member_id, book_name, book_author, genre) {
         this.book_id = book_id;
         this.book_name = book_name;

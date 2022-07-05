@@ -19,6 +19,12 @@ class Members {
             return false;
         }
     }
+    
+    async getUsername() {
+        var sql = "select username from members where members.member_id = ?";
+        const result = await db.query(sql, [this.member_id]);
+        this.username = result[0].username;
+    }
 
     async findMemberById(member_id) {
         var sql = "select member_id from members WHERE members.member_id = ?";
